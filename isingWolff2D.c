@@ -53,25 +53,25 @@ void wolffStep(const int N){
 
     while(sp){
         current = stack[--sp];
-        if((nn==current+1)>=N) nn-=N;
+        if((nn=current+1)>=N) nn-=N;
         if(s[nn] == os)
             if(drand()<pacc){
                 stack[sp++] = nn;
                 s[nn] = ns;
             }
-        if((nn==current-1)<0) nn+=N;
+        if((nn=current-1)<0) nn+=N;
         if(s[nn] == os)
             if(drand()<pacc){
                 stack[sp++] = nn;
                 s[nn] = ns;
             }
-        if((nn==current+L)>=N) nn-=N;
+        if((nn=current+L)>=N) nn-=N;
         if(s[nn] == os)
             if(drand()<pacc){
                 stack[sp++] = nn;
                 s[nn] = ns;
             }
-        if((nn==current-L)<0) nn+=N;
+        if((nn=current-L)<0) nn+=N;
         if(s[nn] == os)
             if(drand()<pacc){
                 stack[sp++] = nn;
@@ -83,7 +83,6 @@ int main(int argc, char **argv){
     int MCS,outSize;
     int **configs;
     char fname[100],dirname[50];
-    FILE *fp;
 
     if(argc!=4)
         exit_failure("Need <L> <Temp> <MCS> \n");
@@ -92,6 +91,7 @@ int main(int argc, char **argv){
     temp = atof(argv[2]);
     MCS = atof(argv[3]);
     outSize = (int)(MCS/TAKEMEASEVERY);
+    
     sprintf(dirname,"rm -rv dataIsing2D_L%d",L);
     system(dirname);
     sprintf(dirname,"mkdir dataIsing2D_L%d",L);
