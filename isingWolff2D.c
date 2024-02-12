@@ -92,8 +92,8 @@ int main(int argc, char **argv){
     MCS = atof(argv[3]);
     outSize = (int)(MCS/TAKEMEASEVERY);
     
-    sprintf(dirname,"rm -rv dataIsing2D_L%d",L);
-    system(dirname);
+    //sprintf(dirname,"rm -rv dataIsing2D_L%d",L);
+    //system(dirname);
     sprintf(dirname,"mkdir dataIsing2D_L%d",L);
     system(dirname);
 
