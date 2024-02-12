@@ -36,6 +36,25 @@ double drand(){
     return (double) rand()/RAND_MAX;
 }
 
+void init_obs(int *energy, int *magn){
+    int nn, nnsum;
+    *energy = 0;
+    *magn = 0;
+    for(int i = 0;i<N;i++){
+        if ((nn=i+1)>=N) nn -= N;
+        nnsum = s [nn] ;
+        if ((nn=i-1)<0) nn += N;
+        nnsum += s [nn] ;
+        if ((nn=i+L)>=N) nn -= N;
+        nnsum += s [nn] ;
+        if ((nn=i-L)<0) nn += N;
+        nnsum += s [nn] ;
+
+        magn += s[i];
+        energy -= s[i]*nnsum;
+    }
+    *energy /= 2;
+}
 void wolffStep(const int N){
     int i; 
     int sp;
