@@ -43,7 +43,7 @@ void wolffStep(const int N){
     int current,nn;
     int stack[N];
 
-    i = rand()%N;
+    i = (int)drand()*N;
 
     stack[0] = i;
     sp = 1;
@@ -104,8 +104,7 @@ int main(int argc, char **argv){
     s = (int*) malloc(sizeof(int)*N);
 
     for(int i = 0;i<N;i++){
-        if(drand()>0.5) s[i] = 1;
-        else s[i] = -1;
+        s[i] = 1;
     }
 
     configs = (int**)malloc(sizeof(int*)*outSize);
@@ -113,7 +112,6 @@ int main(int argc, char **argv){
 
     for(int step = 0;step < MCS+THERM;step++){
         wolffStep(N);
-
         if((step%TAKEMEASEVERY==0) && (step>=THERM)){
             int idx = (int)(step-THERM)/TAKEMEASEVERY;
             for(int k = 0;k<N;k++) configs[idx][k]=s[k];
