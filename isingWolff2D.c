@@ -97,7 +97,7 @@ int main(int argc, char **argv){
     sprintf(dirname,"mkdir dataIsing2D_L%d",L);
     system(dirname);
 
-    sprintf(fname,"dataIsing2D_L%d/config_L%d_T%.4f.bin",L,L,temp);
+    sprintf(fname,"dataIsing2D_L%d/config_L%d_T%.3f.bin",L,L,temp);
 
     pacc = 1.-exp(-2./temp);
 
