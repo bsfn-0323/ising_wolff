@@ -4,6 +4,8 @@
 
 #define THERM 100000
 #define TAKEMEASEVERY 5
+//#define EXPORTCONFIGS 
+#define EXPORTCORR
 int L,N;
 int *s;
 double temp;
@@ -22,6 +24,17 @@ void exportArrayToBinary2(const char *filename, int **array, int dim1, int dim2)
     for (int i = 0; i < dim1; i++) {
             fwrite(array[i], sizeof(int), dim2, file);
     }
+
+    fclose(file);
+}
+void exportArrayToBinary(const char *filename, int *array, int dim1) {
+    FILE *file = fopen(filename, "wb");
+
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file for writing.\n");
+    }
+
+    fwrite(array, sizeof(int), dim1, file);
 
     fclose(file);
 }
@@ -81,7 +94,12 @@ void wolffStep(const int N){
 }
 int main(int argc, char **argv){
     int MCS,outSize;
+    #ifdef EXPORTCONFIGS
     int **configs;
+    #endif
+    #ifdef EXPORTCORR
+    int **corrmat,*magns;
+    #endif
     char fname[100],dirname[50];
 
     if(argc!=4)
@@ -97,8 +115,6 @@ int main(int argc, char **argv){
     sprintf(dirname,"mkdir dataIsing2D_L%d",L);
     system(dirname);
 
-    sprintf(fname,"dataIsing2D_L%d/config_L%d_T%.3f.bin",L,L,temp);
-
     pacc = 1.-exp(-2./temp);
 
     s = (int*) malloc(sizeof(int)*N);
@@ -106,23 +122,60 @@ int main(int argc, char **argv){
     for(int i = 0;i<N;i++){
         s[i] = 1;
     }
-
+    #ifdef EXPORTCONFIGS
     configs = (int**)malloc(sizeof(int*)*outSize);
     for(int i = 0;i<outSize;i++) configs[i] = (int*)malloc(sizeof(int)*N);
+    #endif
+    #ifdef EXPORTCORR
+    corrmat = (int**)malloc(sizeof(int*)*N);
+    for(int i = 0;i<N;i++){
+        corrmat[i] = (int*)malloc(sizeof(int)*N);
+        for(int j = 0;j<N;j++){
+            corrmat[i][j] = 0;
+        }
+    }
+    magns = (int*)malloc(sizeof(int)*outSize);
 
+    #endif
     for(int step = 0;step < MCS+THERM;step++){
         wolffStep(N);
         if((step%TAKEMEASEVERY==0) && (step>=THERM)){
             int idx = (int)(step-THERM)/TAKEMEASEVERY;
+            #ifdef EXPORCONFIGS
             for(int k = 0;k<N;k++) configs[idx][k]=s[k];
+            #endif
+            #ifdef EXPORTCORR
+            int sum = 0;
+            for(int k = 0;k<N;k++){
+                sum += s[k];
+                corrmat[k][k] += s[k]*s[k];
+                for(int j = k+1;j<N;j++){
+                    corrmat[k][j] += s[k]*s[j];
+                    corrmat[j][k] = corrmat[k][j];
+                }
+            }
+            magns[idx] = sum;
+            #endif
         }
     }
-    
+    #ifdef EXPORTCONFIGS
+    sprintf(fname,"dataIsing2D_L%d/config_L%d_T%.3f.bin",L,L,temp);
     exportArrayToBinary2(fname,configs,outSize,N);
-
-    free(s);
     for(int i = 0;i<outSize;i++) free(configs[i]);
     free(configs);
+    #endif
+    #ifdef EXPORTCORR
+    sprintf(fname,"dataIsing2D_L%d/corrmat_T%.3f.bin",L,temp);
+    exportArrayToBinary2(fname,corrmat,N,N);
+    sprintf(fname,"dataIsing2D_L%d/magn_T%.3f.bin",L,temp);
+    exportArrayToBinary(fname,magns,outSize);
+
+    for(int i = 0;i<N;i++) free(corrmat[i]);
+    free(corrmat);
+    free(magns);
+    #endif
+
+    free(s);
 
     return 0;
 }

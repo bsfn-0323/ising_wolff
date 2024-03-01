@@ -1,8 +1,8 @@
 #!/bin/bash
-declare -i nMeas=10
+declare -i nMeas=20
 declare -i L=$1
-Tmin=2.20
-dT=0.01
+Tmin=2.27
+dT=0.05
 Tmax=$(bc<<<"$Tmin+$dT*$nMeas")
 declare -i MCS=1000000
 
